@@ -1,0 +1,212 @@
+﻿<Page
+    x:Class="MasterDetailApp.BookPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MasterDetailApp"
+    xmlns:common="using:MasterDetailApp.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"   
+    mc:Ignorable="d">
+
+    <Grid >
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <!--VisualState to be triggered when window width is >=720 effective pixels.-->
+                        <AdaptiveTrigger MinWindowWidth="720" />
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="readingImage.Width" Value="320" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <!--VisualState to be triggered when window width is >=320 effective pixels.-->
+                        <AdaptiveTrigger MinWindowWidth="320" />
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="readingImage.Width" Value="160" />
+                        <Setter Target="epub.Style" Value="{StaticResource MobileHeaderTextStyle}"/>
+                        <Setter Target="reader.Style" Value="{StaticResource MobileHeaderTextStyle}"/>
+                        <Setter Target="rowone.Height" Value="50"/>
+                        <Setter Target="rowthree.Height" Value="50"/>
+                        <Setter Target="currentBookInline.Visibility" Value="Visible"/>
+                        <Setter Target="currentBook.Visibility" Value="Collapsed"/>
+                        <Setter Target="mainGrid.BorderThickness" Value="0"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <!--VisualState to be triggered when window width is <320 effective pixels.-->
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="readingImage.Width" Value="120" />
+                        <Setter Target="epub.Style" Value="{StaticResource MobileHeaderTextStyle}"/>
+                        <Setter Target="reader.Style" Value="{StaticResource MobileHeaderTextStyle}"/>
+                        <Setter Target="rowone.Height" Value="50"/>
+                        <Setter Target="rowthree.Height" Value="50"/>
+                        <Setter Target="currentBookInline.Visibility" Value="Visible"/>
+                        <Setter Target="currentBook.Visibility" Value="Collapsed"/>
+                        <Setter Target="mainGrid.BorderThickness" Value="0"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <!-- Main Grid -->
+        <Grid Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="rowone" Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition x:Name="rowthree" Height="100"/>
+            </Grid.RowDefinitions>
+            <Grid BorderBrush="LightGray" BorderThickness="0">
+                    <StackPanel Orientation="Horizontal" Margin="40,0,40,0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                    <TextBlock x:Name="epub" Text="epub" Style="{StaticResource HeaderTextStyle}" Margin="10"/>
+                    <TextBlock x:Name="reader" Text="reader" Style="{StaticResource HeaderTextStyle}" Foreground="Teal" Margin="10"/>
+                    </StackPanel>
+            </Grid>
+            <Grid x:Name="mainGrid" BorderBrush="LightGray" BorderThickness="1"
+                Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <GridView
+                    x:Name="itemGridView"
+                    ItemTemplate="{StaticResource CustomItemTemplate}"
+                    ItemContainerStyle="{StaticResource GridViewItemStyle}"
+                    SelectionMode="Single"
+                    IsItemClickEnabled="True"
+                    SelectionChanged="itemGridView_SelectionChanged"/>
+                    <StackPanel x:Name="currentBookInline" VerticalAlignment="Bottom" Visibility="Collapsed" Grid.Row="1">
+                        <StackPanel Background="{StaticResource WhiteBG}" Height="80" Orientation="Horizontal">
+                            <Image Source="{Binding ImagePath}" Stretch="Uniform" VerticalAlignment="Top" Width="80"/>
+                            <Grid >
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Title}" Style="{StaticResource TitleBigTextStyle}" Margin="5"/>
+                                    <TextBlock Text="{Binding Author}" Style="{StaticResource AuthorBigTextStyle}" Margin="5,10"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                        <Grid BorderBrush="LightGray" BorderThickness="1" MinHeight="60">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Background="{StaticResource YellowBG}">
+                                <StackPanel  VerticalAlignment="Center">
+                                    <TextBlock x:Name="chapCountInline" Text="12" Style="{StaticResource MobileHeaderTextStyle}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Chapters" Style="{StaticResource MobileTitleTextStyle}" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="1" Background="{StaticResource BlueBG}">
+                                <StackPanel  VerticalAlignment="Center">
+                                    <TextBlock x:Name="chapProgressInline" Text="16" Style="{StaticResource MobileHeaderTextStyle}" HorizontalAlignment="Center" Foreground="White"/>
+                                    <TextBlock Text="Now Reading" Style="{StaticResource MobileTitleTextStyle}" HorizontalAlignment="Center" Foreground="White"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="2" Background="{StaticResource BlackBG}">
+                                <Button x:Name="openBookInline" Content="Read Book" Click="openBook_Click" MinWidth="320"  MinHeight="60" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="2" Foreground="White" Background="{StaticResource BlackBG}"/>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <Grid 
+                    BorderBrush="LightGray"
+                    BorderThickness="1"
+                    x:Name="currentBook"
+                    Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Image x:Name="readingImage" Source="{Binding ImagePath}" Width="320" Stretch="Uniform" VerticalAlignment="Top"/>
+                    <StackPanel Grid.Row="1">
+                        <Grid VerticalAlignment="Center">
+                        <StackPanel Background="{StaticResource WhiteBG}"  >
+                            <TextBlock Text="{Binding Title}" Style="{StaticResource TitleBigTextStyle}" Margin="5"/>
+                            <TextBlock Text="{Binding Author}" Style="{StaticResource AuthorBigTextStyle}" Margin="5,10"/>
+                        </StackPanel>
+                        </Grid>
+                        <Grid BorderBrush="LightGray" BorderThickness="1" MinHeight="90" Background="{StaticResource WhiteBG}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Background="{StaticResource YellowBG}">
+                                <StackPanel  VerticalAlignment="Center">
+                                    <TextBlock x:Name="chapCount" Text="12" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Chapters" Style="{StaticResource TitleTextStyle}" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="1" Background="{StaticResource BlueBG}">
+                                <StackPanel  VerticalAlignment="Center">
+                                    <TextBlock x:Name="chapProgress" Text="16" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center" Foreground="White"/>
+                                    <TextBlock Text="Now Reading" Style="{StaticResource TitleTextStyle}" HorizontalAlignment="Center" Foreground="White"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                        <Button x:Name="openBook" Content="Read Book" Click="openBook_Click" Width="320"  Height="60" Foreground="White" Background="{StaticResource BlackBG}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+        </Grid>
+        
+        <Grid 
+            x:Name="imageGrid"
+            Grid.Row="1"
+            Visibility="Collapsed">
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity="0.2"/>
+            </Grid.Background>
+            <Grid Height="210" VerticalAlignment="Center" Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <GridView
+                    Grid.Row="1"
+                    Margin="20,0,0,0"
+                    x:Name="imageGridView"
+                    AutomationProperties.AutomationId="ItemsImageGridView"
+                    AutomationProperties.Name="Items"
+                    ItemsSource="{Binding Photos}"
+                    ItemTemplate="{StaticResource Image80ItemTemplate}"
+                    SelectionMode="None"
+                    IsItemClickEnabled="True"
+                    ItemClick="add_Book">
+                    <GridView.DataContext>
+                        <common:BookPhotos/>
+                    </GridView.DataContext>
+                </GridView>
+                <TextBlock x:Name="imageGridViewText"  Text="Select a thumbnail" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="26,0,0,0" FontSize="20" Foreground="#3B454F"/>
+            </Grid>
+        </Grid>
+        <SplitView x:Name="SamplesSplitView" DisplayMode="Overlay" x:FieldModifier="Public" Grid.RowSpan="2" Width="180" HorizontalAlignment="Left">
+            <SplitView.Pane>
+                <StackPanel VerticalAlignment="Top" Margin="0,50" HorizontalAlignment="Left">
+                    <Button x:Name="button" Background="{StaticResource BlueBG}" Foreground="White" Style="{StaticResource AppBarButtonStyle}" Content="&#xE109;" Tag="Add Book" Height="70" Click="addBook_Click" Margin="0,1"/>
+                    <Button x:Name="clear" Background="{StaticResource BlueBG}" Foreground="White" Style="{StaticResource AppBarButtonStyle}" Content="&#xE107;" Tag="Clear Books"  Height="70" Click="clear_Click" Margin="0,1"/>
+                    <Button x:Name="help" Background="{StaticResource BlueBG}" Foreground="White" Style="{StaticResource AppBarButtonStyle}" Content="&#xE11B;" Tag="Help" Height="70" Click="help_Click" Margin="0,1"/>
+                </StackPanel>
+            </SplitView.Pane>
+        </SplitView>
+        <StackPanel Grid.RowSpan="2">
+            <Button Style="{StaticResource SplitViewTogglePaneButtonStyle}" Click="ShowSliptView" Background="{StaticResource BlueBG}" Foreground="White"/>
+        </StackPanel>
+    </Grid>
+</Page>
